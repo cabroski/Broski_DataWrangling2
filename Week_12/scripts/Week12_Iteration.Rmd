@@ -208,7 +208,14 @@ Another common thing to do is combine loops with functions by calling one or mor
 For example, let's take the non-vectorized version of our `est_mass` function that returns an estimated mass if the `volume > 5` and `NA` if it's not.
 
 ```{r}
-
+est_mass <- function(a, volume, b) {
+  if (volume > 5) {
+    mass <- a * volume ^ b
+  } else {
+    mass <- NA
+  }
+  return(mass)
+}
 ```
 
 We can't pass the vector to the function and get back a vector of results because of the `if` statements because `if` statements are not vectorized.
@@ -218,13 +225,32 @@ Instead, we can loop over the values.
 First, we'll create an empty vector to store the results. Then we will loop by index, calling the function for each value of `volumes`.
 
 ```{r}
+masses <- vector(mode = "numeric", length = length(volumes))
 
+for (i in 1:length(volumes)) {
+  mass <- est_mass(as[i], volumes[i], bs[i])
+  masses[i] <- mass
+}
+masses
+volumes
 ```
 
 If we hadn't written the `if`-`else` statement as a function (`est_mass_max`), we could still include it! It would look like this:
 
 ```{r}
+masses <- vector(mode = "numeric", length = length(volumes))
 
+for (i in 1:length(volumes)) {
+  # if else statement
+  if (volumes[i] > 5) {
+    mass <- as[i] * volumes[i] ^ bs[i]
+  } else {
+    mass <- NA
+  } 
+  
+  # assign the mass value to the ith position
+  masses[i] <- mass
+}
 ```
 
 Realistically, I find myself putting `if`-`else` statements inside `for` loops, like the structure above, rather frequently.
@@ -234,19 +260,46 @@ Realistically, I find myself putting `if`-`else` statements inside `for` loops, 
 By default, when R loops over a data frame, it loops over the columns. Remember, R is oriented to work in vectors, and data frames are organized by converting multiple vectors into the columns.
 
 ```{r}
+vol_data <- data.frame(a = as, 
+                       b = bs,
+                       volume = volumes)
 
+for (i in vol_data) {
+  print(i)
+}
 ```
 
 To loop over rows, we need to do some extra work. We can loop by index and subset each row.
 
 ```{r}
-
+for (i in 1:nrow(vol_data)) {
+  print(vol_data[i, ])
+}
 ```
 
 If we want to use a specific column, we need to specify the column via sub-setting, as well. We can do that 2 different ways.
 
 ```{r}
+masses <- vector(mode = "numeric", length = length(volumes)) 
 
+# Option 1: subset both row and column with []
+
+for (i in 1:nrow(vol_data)) {
+  mass <- est_mass(vol_data[i, "a"],
+                   vol_data[i, "volume"],
+                   vol_data[i, "b"])
+  masses[i] <- mass
+}
+masses
+
+# Option 2: Name specific col with $ then subset by index
+
+for (i in 1:nrow(vol_data)) {
+  mass <- est_mass(vol_data$a[i], 
+                   vol_data$volume[i],
+                   vol_data$b[i])
+  masses[i] <- mass
+}
 ```
 
 An alternative structure (without the created function) might look like this.
@@ -254,7 +307,13 @@ An alternative structure (without the created function) might look like this.
 We can create a new, empty column in the data frame. We can also place the `if`-`else` statement directly into the for loop and reference specific columns with `$` operator and subset by index, as we did above.
 
 ```{r}
+vol_data$mass <- NA
 
+for (i in 1:nrow(vol_data)) {
+  mass <- est_mass(vol_data$a[i], 
+                   vol_data$volume[i],
+                   vol_data$b[i])
+  vol_data$mass[i] <- mass
 ```
 
 > Work on Question 2 in the Assignment.
@@ -269,9 +328,9 @@ To demonstrate, let's download some simulated satellite collar data. Make sure y
 
 ```{r}
 download.file("http://www.datacarpentry.org/semester-biology/data/locations.zip",
-              "locations.zip")
+              "../data_raw/locations.zip")
 
-unzip("locations.zip")
+unzip("../data_raw/locations.zip", exdir = "../data_raw/")
 ```
 
 Before we can loop through these files, we need to get the names of all of these files.
@@ -281,13 +340,14 @@ We can do so by using the `list.files()` function.
 If we run it without arguments, it will give us the names of all files in the directory.
 
 ```{r}
-
+list.files()
 ```
 
 We, however, just want the data files we downloaded, so we'll add the optional `pattern` argument to only get the files that start with `"locations-"`. Notice that adding the `-` at the end of the pattern excludes the `location.zip` file name.
 
 ```{r}
-
+data_files <- list.files(path = "../data_raw",
+                         pattern = "locations-")
 ```
 
 Now that we have our list of file names, we can loop over it.
