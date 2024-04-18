@@ -129,11 +129,49 @@ c.  Calculate the mean mass for each `species` using `dplyr` (no `for` loops).
 ```{r}
 dino_lengths <- read_csv("../data_raw/dinosaur_lengths.csv")
 
+as <- c(10.95, 0.73, 214.44, 25.37)
+bs <- c(2.64, 3.63, 1.46, 2.49)
+
 mass_from_length <- function(length, species){
-  mass <- a * length^b
+  if (species == "Stegosauria") {
+    mass <- a * length^b
+  } else if (species == "Theropoda") {
+    mass <- a * length^b
+  } else if (species == "Sauropoda") {
+    mass <- a * length ^ b
+  } else {
+    mass <- a * length^b
+  }
+  return(mass)
 }
 
+
 # 2a
+masses <- vector(mode = "numeric", length = length(lengths)) # change to masses?
+  
+for (i in 1:length(as)) {
+  mass <- mass_from_length(as[i])
+  masses[i] <- mass
+}
+masses
+
+for (i in 1:length(volumes)) {
+  mass <- est_mass(as[i], volumes[i], bs[i])
+  masses[i] <- mass
+}
+masses
+volumes
+
+for (i in 1:length(volumes)) {
+  # if else statement
+  if (volumes[i] > 5) {
+    mass <- as[i] * volumes[i] ^ bs[i]
+  } else {
+    mass <- NA
+  } 
+  
+  # assign the mass value to the ith position
+  masses[i] <- mass
 
 # 2b
 
