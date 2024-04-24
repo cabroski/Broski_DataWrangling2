@@ -144,98 +144,33 @@ mass_from_length <- function(length, species) {
 
 # 2a
 
-for (i in 1:length(lengths)) {
-  if (species == "Stegosauria") {
-    mass = 10.95 * length ^ 2.64
-  } else if (species == "Theropoda") {
-    mass = 0.73 * length ^ 3.63 
-  } else if (species == "Sauropoda") {
-    mass = 214.44 * length ^ 1.46
-  } else {
-    mass = 25.37 * length ^ 2.49
-}
-
-for (i in 1:length(volumes)) {
-  # if else statement
-  if (volumes[i] > 5) {
-    mass <- as[i] * volumes[i] ^ bs[i]
-  } else {
-    mass <- NA
-  } 
+masses <- vector(mode = "numeric", length = nrow(dino_lengths)) 
   
-  # assign the mass value to the ith position
+for (i in 1:nrow(dino_lengths)) {
+  mass <- mass_from_length(dino_lengths[i, "lengths"],
+                           dino_lengths[i, "species"])
   masses[i] <- mass
 }
+ head(masses)
 
-
-
-## random work below
-
-masses <- vector(mode = "numeric", length = length(lengths))
-
-for (i in 1:length(lengths)) {
-  mass <- mass_from_length(lengths[i], species[i])
-  masses[i] <- mass
-}
-
-for (i in 1:length(volumes)) {
-  mass <- est_mass(as[i], volumes[i], bs[i])
-  masses[i] <- mass
-}
-masses
-volumes
+ # running, but returning a vertical list instead of horizontal
+ 
+ # 2b
+ 
+ dino_lengths$mass <- masses 
+ 
+ # for (i in 1:length(masses)) {
+ # dino_lengths$mass[i] <- masses[i]
+ #}
+ head(dino_lengths)
+ 
+ # mass column is added, but not showing observations when using head()
+ 
+ # 2c
 ```
 
 ```{r}
-dino_lengths <- read_csv("../data_raw/dinosaur_lengths.csv")
 
-as <- c(10.95, 0.73, 214.44, 25.37)
-bs <- c(2.64, 3.63, 1.46, 2.49)
-
-mass_from_length <- function(length, species){
-  if (species == "Stegosauria") {
-    mass <- a * length^b
-  } else if (species == "Theropoda") {
-    mass <- a * length^b
-  } else if (species == "Sauropoda") {
-    mass <- a * length ^ b
-  } else {
-    mass <- a * length^b
-  }
-  return(mass)
-}
-
-
-# 2a
-masses <- vector(mode = "numeric", length = length(lengths)) # change to masses?
-  
-for (i in 1:length(as)) {
-  mass <- mass_from_length(as[i])
-  masses[i] <- mass
-}
-masses
-
-for (i in 1:length(volumes)) {
-  mass <- est_mass(as[i], volumes[i], bs[i])
-  masses[i] <- mass
-}
-masses
-volumes
-
-for (i in 1:length(volumes)) {
-  # if else statement
-  if (volumes[i] > 5) {
-    mass <- as[i] * volumes[i] ^ bs[i]
-  } else {
-    mass <- NA
-  } 
-  
-  # assign the mass value to the ith position
-  masses[i] <- mass
-
-# 2b
-
-# 2c
 ```
 
 ### 3. Multi-file Analysis (40 pts)
