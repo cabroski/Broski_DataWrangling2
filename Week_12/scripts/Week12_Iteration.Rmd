@@ -314,6 +314,7 @@ for (i in 1:nrow(vol_data)) {
                    vol_data$volume[i],
                    vol_data$b[i])
   vol_data$mass[i] <- mass
+}
 ```
 
 > Work on Question 2 in the Assignment.
@@ -341,6 +342,8 @@ If we run it without arguments, it will give us the names of all files in the di
 
 ```{r}
 list.files()
+
+list.files(path = "../data_raw")
 ```
 
 We, however, just want the data files we downloaded, so we'll add the optional `pattern` argument to only get the files that start with `"locations-"`. Notice that adding the `-` at the end of the pattern excludes the `location.zip` file name.
@@ -348,6 +351,7 @@ We, however, just want the data files we downloaded, so we'll add the optional `
 ```{r}
 data_files <- list.files(path = "../data_raw",
                          pattern = "locations-")
+data_files
 ```
 
 Now that we have our list of file names, we can loop over it.
@@ -357,13 +361,24 @@ Perhaps we want to count the number of observations in each file.
 First, we create an empty vector to store those counts.
 
 ```{r}
-
+num_files <- length(data_files)
+results <- vector(mode = "integer", length = num_files)
 ```
 
 Now that we have created our empty vector of the appropriate length, we can write our loop to perform the task we want--counting the number of observations (rows) in each file.
 
 ```{r}
-
+for (i in 1:num_files){
+# specify which file
+  filename <- data_files[i]
+# read in the file
+  data <- read.csv(paste0("../data_raw/", filename))
+# save the number of rows as an object called `count`
+  count <- nrow(data)
+# save the count value in the correct position in the `results` vector
+  results[i] <- count
+}
+results
 ```
 
 > Start with Question 3a. Note that that question uses different simulated collar data.
@@ -383,7 +398,9 @@ We would start by creating an empty data frame that we will then populate with t
 -   "Column Name" = "an empty vector of the correct type and length"
 
 ```{r}
-
+results <- data.frame(file_name = vector(mode = "character", length = num_files),
+count = vector(mode = "integer", length = num_files),
+min_lat = vector(mode = "numeric", length = num_files))
 ```
 
 Let's modify our previous loop.
@@ -393,7 +410,15 @@ Instead of storing `count` in `results[i]`, we will need to first specify which 
 We also want to store the file name and the minimum latitude in a similar fashion.
 
 ```{r}
-
+for (i in 1:num_files){
+# read in the data file
+  filename <- data_files[i]
+  data <- read.csv(paste0("../data_raw/", filename))
+# add information about the data file into the data frame
+  results$file_name[i] <- filename
+  results$count[i] <- nrow(data)
+  results$min_lat[i] <- min(data$lat)
+}
 ```
 
 > Work on the rest of the assignment.

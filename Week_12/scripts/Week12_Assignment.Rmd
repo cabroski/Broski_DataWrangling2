@@ -129,6 +129,66 @@ c.  Calculate the mean mass for each `species` using `dplyr` (no `for` loops).
 ```{r}
 dino_lengths <- read_csv("../data_raw/dinosaur_lengths.csv")
 
+mass_from_length <- function(length, species) {
+  if (species == "Stegosauria") {
+    mass = 10.95 * length ^ 2.64
+  } else if (species == "Theropoda") {
+    mass = 0.73 * length ^ 3.63 
+  } else if (species == "Sauropoda") {
+    mass = 214.44 * length ^ 1.46
+  } else {
+    mass = 25.37 * length ^ 2.49
+  }
+  return(mass)
+}
+
+# 2a
+
+for (i in 1:length(lengths)) {
+  if (species == "Stegosauria") {
+    mass = 10.95 * length ^ 2.64
+  } else if (species == "Theropoda") {
+    mass = 0.73 * length ^ 3.63 
+  } else if (species == "Sauropoda") {
+    mass = 214.44 * length ^ 1.46
+  } else {
+    mass = 25.37 * length ^ 2.49
+}
+
+for (i in 1:length(volumes)) {
+  # if else statement
+  if (volumes[i] > 5) {
+    mass <- as[i] * volumes[i] ^ bs[i]
+  } else {
+    mass <- NA
+  } 
+  
+  # assign the mass value to the ith position
+  masses[i] <- mass
+}
+
+
+
+## random work below
+
+masses <- vector(mode = "numeric", length = length(lengths))
+
+for (i in 1:length(lengths)) {
+  mass <- mass_from_length(lengths[i], species[i])
+  masses[i] <- mass
+}
+
+for (i in 1:length(volumes)) {
+  mass <- est_mass(as[i], volumes[i], bs[i])
+  masses[i] <- mass
+}
+masses
+volumes
+```
+
+```{r}
+dino_lengths <- read_csv("../data_raw/dinosaur_lengths.csv")
+
 as <- c(10.95, 0.73, 214.44, 25.37)
 bs <- c(2.64, 3.63, 1.46, 2.49)
 
@@ -197,6 +257,36 @@ Include the name of the file in the graph as the graph title using the `ggtitle(
 b.  Add code to the loop to calculate the minimum and maximum latitude in the file, and store these values, along with the name of the file, in a data frame.
 
 Show the data frame as output.
+
+```{r}
+unzip("..data_raw/individual_collar_data.zip")
+
+list.files(path = "../data_raw")
+
+collar_files <- list.files(path = "../data_raw",
+                         pattern = "collar-data-.*.txt")
+collar_files
+
+# 3a
+for (i in collar_files) {
+  filename <- collar_files
+  data <- read.csv(paste0("../data_raw/", filename))
+  
+}
+
+for (i in 1:num_files){
+# specify which file
+  filename <- data_files[i]
+# read in the file
+  data <- read.csv(paste0("../data_raw/", filename))
+# save the number of rows as an object called `count`
+  count <- nrow(data)
+# save the count value in the correct position in the `results` vector
+  results[i] <- count
+}
+results
+
+```
 
 # Reflection
 
