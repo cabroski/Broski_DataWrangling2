@@ -154,6 +154,8 @@ for (i in 1:nrow(dino_lengths)) {
  head(masses)
 
  # running, but returning a vertical list instead of horizontal
+ # change to method with dollar signs, but welcome to leave it
+ 
  
  # 2b
  
@@ -167,6 +169,8 @@ for (i in 1:nrow(dino_lengths)) {
  # mass column is added, but not showing observations when using head()
  
  # 2c
+ 
+ #summarize
 ```
 
 ```{r}
@@ -198,28 +202,20 @@ unzip("..data_raw/individual_collar_data.zip")
 
 list.files(path = "../data_raw")
 
-collar_files <- list.files(path = "../data_raw",
+collar_files <- list.files(path = "../data_raw/individual_collar_data/",
                          pattern = "collar-data-.*.txt")
 collar_files
 
 # 3a
-for (i in collar_files) {
-  filename <- collar_files
-  data <- read.csv(paste0("../data_raw/", filename))
-  
+for (i in 1:length(collar_files)) {
+  filename <- collar_files[i]
+  data <- read.csv(paste0("../data_raw/individual_collar_data/", filename)) 
+  plot <- ggplot(data = data, mapping = aes(x = long, y = lat)) +
+    geom_path()
+  print(plot)
 }
 
-for (i in 1:num_files){
-# specify which file
-  filename <- data_files[i]
-# read in the file
-  data <- read.csv(paste0("../data_raw/", filename))
-# save the number of rows as an object called `count`
-  count <- nrow(data)
-# save the count value in the correct position in the `results` vector
-  results[i] <- count
-}
-results
+
 
 ```
 
