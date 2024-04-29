@@ -147,30 +147,25 @@ mass_from_length <- function(length, species) {
 masses <- vector(mode = "numeric", length = nrow(dino_lengths)) 
   
 for (i in 1:nrow(dino_lengths)) {
-  mass <- mass_from_length(dino_lengths[i, "lengths"],
-                           dino_lengths[i, "species"])
+  mass <- mass_from_length(dino_lengths$lengths[i],
+                           dino_lengths$species[i])
   masses[i] <- mass
 }
  head(masses)
-
- # running, but returning a vertical list instead of horizontal
- # change to method with dollar signs, but welcome to leave it
- 
  
  # 2b
  
  dino_lengths$mass <- masses 
- 
- # for (i in 1:length(masses)) {
- # dino_lengths$mass[i] <- masses[i]
- #}
+
  head(dino_lengths)
- 
- # mass column is added, but not showing observations when using head()
+
  
  # 2c
  
- #summarize
+dino_lengths %>% 
+  group_by(species) %>% 
+  summarise(avg_mass = mean(mass))
+ 
 ```
 
 ```{r}
@@ -211,11 +206,25 @@ for (i in 1:length(collar_files)) {
   filename <- collar_files[i]
   data <- read.csv(paste0("../data_raw/individual_collar_data/", filename)) 
   plot <- ggplot(data = data, mapping = aes(x = long, y = lat)) +
-    geom_path()
+    geom_path() +
+    ggtitle(filename)
   print(plot)
 }
 
+# 3b
 
+collar_files <- length(collar_files)
+results <- data.frame(filename = vector(mode = "character", length = collar_files),
+                       max_lat = vector(mode = "numeric", length = collar_files),
+                       min_lat = vector(mode = "numeric", length = collar_files))
+for (i in 1:collar_files) {
+  filename <- collar_files[i]
+  data <- read.csv(paste0("../data_raw/individual_collar_data/", filename))
+  results$filename[i] <- filename
+  results$max_lat[i] <- max(data$lat)
+  results$min_lat[i] <- min(data$lat)
+}
+results
 
 ```
 
