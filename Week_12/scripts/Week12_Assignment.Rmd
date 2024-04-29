@@ -212,17 +212,16 @@ for (i in 1:length(collar_files)) {
 }
 
 # 3b
-
-collar_files <- length(collar_files)
-results <- data.frame(filename = vector(mode = "character", length = collar_files),
-                       max_lat = vector(mode = "numeric", length = collar_files),
-                       min_lat = vector(mode = "numeric", length = collar_files))
-for (i in 1:collar_files) {
+results <- data.frame(filename = vector(mode = "character", length = length(collar_files)),
+                       max_lat = vector(mode = "numeric", length = length(collar_files)),
+                       min_lat = vector(mode = "numeric", length = length(collar_files)))
+                      
+for (i in 1:length(collar_files)) {
   filename <- collar_files[i]
   data <- read.csv(paste0("../data_raw/individual_collar_data/", filename))
   results$filename[i] <- filename
-  results$max_lat[i] <- max(data$lat)
-  results$min_lat[i] <- min(data$lat)
+  results$max_lat[i] <- max(na.omit(data$lat))
+  results$min_lat[i] <- min(na.omit(data$lat))
 }
 results
 
