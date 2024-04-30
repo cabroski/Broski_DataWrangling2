@@ -199,10 +199,12 @@ nCores <- parallel::detectCores() / 2
 capt_histories <- mclapply(tags, create_capture_hist, data = ratdat_med, mc.cores = nCores)
 ```
 
-We can now use the `mclapply` function just as we did with `lapply` but with the added `mc.cores` argument.
+We can now use the `parLapply` function just as we did with `lapply` but with the added `mc.cores` argument.
 
 ```{r eval=FALSE}
+cluster <- parallel::makeCluster(nCores)
 
+results <- parallel::parLapply(cl = cluster, tags, create_capture_hist, data = ratdat_med)
 ```
 
 ### 2. the `foreach` package
@@ -223,7 +225,9 @@ Let's try it out!
 In this case, because the function's output is essentially 1 row, we are going to tell `foreach` to use the `rbind` function (base R version of `bind_rows`) to bring the results together.
 
 ```{r eval=FALSE}
-
+output <- foreach::foreach(i = 1:length(tags), .combine = rbind) %do% {
+  create_capture_hist(tags[i], ratdat_med)
+}
 ```
 
 #### Parallelization using `foreach`
@@ -233,13 +237,17 @@ We can modify the `foreach` function that we have written above to run on multip
 We have to tell the `doParallel` function to start using multiple cores with the `registerDoParallel` function. We then stop it with `stopImplicitCluster`.
 
 ```{r eval=FALSE}
-
+doParallel::registerDoParallel(nCores)
 ```
 
 We can use the `foreach` function and `%dopar%` operator to run our function for the entire dataset.
 
 ```{r eval=FALSE}
+output <- foreach::foreach(i = 1:length(tags), .combine = rbind) %do% {
+  create_capture_hist(tags[i], ratdat_med)
+}
 
+doParallel::stopImplicitCluster()
 ```
 
 ## High Performance Computing at UA

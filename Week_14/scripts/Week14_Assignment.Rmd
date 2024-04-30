@@ -84,6 +84,6 @@ The `forest` data is not a fully cleaned dataset, especially when we look at the
 
 The output should be stored in a vector called `change_in_forest`. Print the head of `change_in_forest`.
 
-(b) Perform the same task as in (a) using the `foreach` function and the `%do%` operator. Use the `.combine = rbind` argument to save the output as a dataframe.
+(b) Perform the same task as in (a) using the `foreach` function and the `%do%` operator. Use the `.combine = c` argument to save the output as a dataframe.
 
 (c) Do the same as in (b) but use parallel processing and the `%dopar%` operator.
