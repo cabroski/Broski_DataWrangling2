@@ -81,8 +81,6 @@ cluster <- parallel::makeCluster(nCores)
 results <- parallel::parLapply(cl = cluster, seq_list, sqrt)
 
 head(seq_sqrt)
-
-## output looks weird
 ```
 
 ### 3. Use `foreach` (35 points)
@@ -98,9 +96,10 @@ Use the `source` function to bring in the `mass_from_length` function (from Week
 (d) Go back through all of your code for question 3 and explicitly call all of the functions that you use. The ones you've written yourself do not need to be explicitly called.
 
 ```{r}
-source("../../Week_12/scripts/")
+source("../data_raw/dino_allometry_fxn.R")
 
-## don't know this part
+dino_lengths <- read.csv("../data_raw/dinosaur_lengths.csv")
+
 
 # 3a
 masses <- vector(mode = "numeric", length = nrow(dino_lengths)) 
@@ -111,22 +110,22 @@ for (i in 1:nrow(dino_lengths)) {
   masses[i] <- mass
 }
 
+head(masses)
 # 3b
 
 mass_output <- foreach::foreach(i = 1:nrow(dino_lengths), .combine = c) %do% {
-  mass_from_length(lengths[i], species[i], dino_lengths)
+  mass_from_length(dino_lengths$lengths[i],
+                  dino_lengths$species[i])
 }
-doParallel::stopImplicitCluster()
 
 # 3c
 doParallel::registerDoParallel(nCores)
 mass_output <- foreach::foreach(i = 1:nrow(dino_lengths), .combine = c) %dopar% {
-  mass_from_length(lengths[i], species[i], dino_lengths)
+  mass_from_length(dino_lengths$lengths[i],
+                  dino_lengths$species[i])
 }
 doParallel::stopImplicitCluster()
 
-# 3d
- ## need to finish
 ```
 
 ### 4. Forest Change through Time (35 points)
@@ -156,15 +155,24 @@ forest <- forest %>%
          year_2021 = `2021`,
          country = `Country Name`)
 
-change_in_forest <- vector(mode = "numeric", length = length(forest))
-for (i in 1:length(forest)) {
-  change_in_forest <- year_2021[i] - year_1990[i]
-  print(change_in_forest[i])
+change_in_forest <- vector(mode = "numeric", length = nrow(forest))
+
+for (i in 1:nrow(forest)) {
+  change_in_forest[i] <- forest$year_2021[i] - forest$year_1990[i]
 }
 
-
+head(change_in_forest)
 
 # 4b
+forest_output <- foreach::foreach(i = 1:nrow(forest), .combine = c) %do% {
+   forest$year_2021[i] - forest$year_1990[i]
+}
 
 # 4c
+doParallel::registerDoParallel(nCores)
+forest_output <- foreach::foreach(i = 1:nrow(forest), .combine = c) %dopar% {
+   forest$year_2021[i] - forest$year_1990[i]
+}
+doParallel::stopImplicitCluster()
+
 ```
