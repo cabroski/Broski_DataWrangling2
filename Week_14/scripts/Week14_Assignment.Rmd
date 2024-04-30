@@ -40,6 +40,12 @@ April 29 at midnight MST
 
 We will use a number of packages to complete this week's assignments. Load in the following packages: `tidyverse`, `foreach`, and `doParallel`.
 
+```{r}
+library(foreach)
+library(doParallel)
+library(tidyverse)
+```
+
 ### 2. Use `apply` functions (20 points)
 
 Let's practice using `lapply` and the mutli-core cousin, `mclapply`.
@@ -56,6 +62,29 @@ Use the `head` function to look at the `seq_list` object. You will notice that t
 
 (b) Use `mclapply` to do the same thing. Remember to set up the number of cores you will use, first.
 
+```{r}
+head(seq_list)
+
+# 2a
+seq_sqrt <- lapply(seq_list, sqrt)
+seq_sqrt <- do.call(rbind, seq_sqrt)
+
+head(seq_sqrt)
+
+# 2b
+nCores <- parallel::detectCores() / 2
+
+seq_sqrt <- mclapply(seq_list, sqrt, mc.cores = nCores)
+
+cluster <- parallel::makeCluster(nCores)
+
+results <- parallel::parLapply(cl = cluster, seq_list, sqrt)
+
+head(seq_sqrt)
+
+## output looks weird
+```
+
 ### 3. Use `foreach` (35 points)
 
 Use the `source` function to bring in the `mass_from_length` function (from Week 12's assignment) in the `dino_allometry_fxn.R` script. You will also want to read in the `dinosaur_lengths.csv` file.
@@ -68,12 +97,44 @@ Use the `source` function to bring in the `mass_from_length` function (from Week
 
 (d) Go back through all of your code for question 3 and explicitly call all of the functions that you use. The ones you've written yourself do not need to be explicitly called.
 
+```{r}
+source("../../Week_12/scripts/")
+
+## don't know this part
+
+# 3a
+masses <- vector(mode = "numeric", length = nrow(dino_lengths)) 
+  
+for (i in 1:nrow(dino_lengths)) {
+  mass <- mass_from_length(dino_lengths$lengths[i],
+                           dino_lengths$species[i])
+  masses[i] <- mass
+}
+
+# 3b
+
+mass_output <- foreach::foreach(i = 1:nrow(dino_lengths), .combine = c) %do% {
+  mass_from_length(lengths[i], species[i], dino_lengths)
+}
+doParallel::stopImplicitCluster()
+
+# 3c
+doParallel::registerDoParallel(nCores)
+mass_output <- foreach::foreach(i = 1:nrow(dino_lengths), .combine = c) %dopar% {
+  mass_from_length(lengths[i], species[i], dino_lengths)
+}
+doParallel::stopImplicitCluster()
+
+# 3d
+ ## need to finish
+```
+
 ### 4. Forest Change through Time (35 points)
 
 The following code chunk reads in data about how much forested area is in each country. You might need to edit the file path to match your project structure.
 
 ```{r}
-forest <- read_csv("forest_per_country.csv", 
+forest <- read_csv("../data_raw/forest_per_country.csv", 
                    skip = 4, col_names = TRUE) %>% 
   select(-`2022`)
 ```
@@ -87,3 +148,23 @@ The output should be stored in a vector called `change_in_forest`. Print the hea
 (b) Perform the same task as in (a) using the `foreach` function and the `%do%` operator. Use the `.combine = c` argument to save the output as a dataframe.
 
 (c) Do the same as in (b) but use parallel processing and the `%dopar%` operator.
+
+```{r}
+# 4a
+forest <- forest %>% 
+  rename(year_1990 = `1990`,
+         year_2021 = `2021`,
+         country = `Country Name`)
+
+change_in_forest <- vector(mode = "numeric", length = length(forest))
+for (i in 1:length(forest)) {
+  change_in_forest <- year_2021[i] - year_1990[i]
+  print(change_in_forest[i])
+}
+
+
+
+# 4b
+
+# 4c
+```

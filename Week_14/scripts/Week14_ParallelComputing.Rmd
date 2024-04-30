@@ -243,7 +243,7 @@ doParallel::registerDoParallel(nCores)
 We can use the `foreach` function and `%dopar%` operator to run our function for the entire dataset.
 
 ```{r eval=FALSE}
-output <- foreach::foreach(i = 1:length(tags), .combine = rbind) %do% {
+output <- foreach::foreach(i = 1:length(tags), .combine = rbind) %dopar% {
   create_capture_hist(tags[i], ratdat_med)
 }
 
